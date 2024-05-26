@@ -1,35 +1,48 @@
-/// Class Event which represents a historical event
+import 'package:api_test/helpers.dart';
+
+///Represents a historical event with a [date], [title], and optional [description].
 class Event {
-  final int id;
+  final int? id;
   final DateTime date;
   final String title;
-  final String description;
+  final String? description;
 
-  Event(this.id, this.date, this.title, this.description);
+  Event({
+    this.id,
+    required this.date,
+    required this.title,
+    this.description,
+  });
 
-  factory Event.fromJson(Map<String, dynamic> json) {
-    return Event(
-      // wenn id ein String ist, dann wird es in int umgewandelt ansonsten bleibt es int
-      json['id'] is String ? int.parse(json['id']) : json['id'],
-      // datetime without hours and minutes and seconds
-      DateTime.parse(json['date']),
-      json['title'],
-      json['description'],
-    );
-  }
+  Event.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        date = DateTime.parse(json['date']),
+        title = json['title'],
+        description = json['description'];
 
-  // Event-Objekt in ein JSON-Objekt umwandeln
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'date': date.toIso8601String().substring(0, 10),
-      'title': title,
-      'description': description,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'date': getDateTimeInDbFormat(date),
+        'title': title,
+        'description': description,
+      };
 
   @override
   String toString() {
     return 'Event{id: $id, date: $date, title: $title, description: $description}';
+  }
+
+  Event copyWith({
+    int? id,
+    DateTime? date,
+    String? title,
+    String? description,
+  }) {
+    return Event(
+      id: id ?? this.id,
+      date: date ?? this.date,
+      title: title ?? this.title,
+      description: description ?? this.description,
+    );
   }
 }

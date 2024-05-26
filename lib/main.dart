@@ -2,22 +2,23 @@ import 'package:api_test/backend/apis/event_api.dart';
 import 'backend/models/event.dart';
 
 void main() async {
-  // Create a new event
-  final event = Event(0, DateTime.now(), 'Test Title', 'Test Description');
-  print('Event: $event');
-
-  // Create an instance of the EventApi class
+  // run crud operations on the event api
   final EventApi eventApi = EventApi();
+  final event = Event(date: DateTime.now(), title: 'Test Title', description: 'Test Description');
 
-  // add the event to the database
-  final eventFromDb = await eventApi.postEvent(event);
-  print('Event from DB: $eventFromDb');
+  // post event
+  final postResponse = await eventApi.postEvent(event);
+  print('postResponse: $postResponse');
 
-  // get all events for today
-  final events = await eventApi.getEventsForDate(DateTime.now());
-  print('Events: $events');
+  // read/get event(s)
+  final getResponse = await eventApi.getEventsForDate(event.date);
+  print('getResponse: $getResponse');
 
-  // delete the event from the database by id
-  final response = await eventApi.deleteEventById(37);
-  print('Event deleted: $response');
+  // update event
+  final updateResponse = await eventApi.updateEventById(getResponse.last.copyWith(title: 'Updated Title', description: 'Updated Description'));
+  print('updateResponse: $updateResponse');
+
+  // delete event
+  final deleteResponse = await eventApi.deleteEventById(updateResponse['data']['id']);
+  print('deleteResponse: $deleteResponse');
 }
