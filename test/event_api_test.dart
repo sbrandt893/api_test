@@ -1,15 +1,34 @@
+//TODO: Make the tests pass
+//TODO: Bonus-Task: Implement further tests and make them pass too
+
 import 'dart:developer';
 import 'package:api_test/backend/apis/event_api.dart';
-import 'package:api_test/backend/models/event.dart';
 import 'package:api_test/config.dart';
 import 'package:api_test/helpers.dart';
 import 'package:dio/dio.dart';
 import 'package:test/test.dart';
 
 void main() {
+  //* Connection test --------------------------------------------------------------------------------------------------
+  test('db connection successfully with statuscode 200', () async {
+    //^ Setup
+    var dio = Dio();
+    var url = dbAddress;
+
+    //! Action
+    final response = await dio.get(url);
+
+    //? Testing
+    expect(response.statusCode, 200);
+
+    // Cleanup (not necessary)
+  });
+
+  //* C-R-U-D tests ----------------------------------------------------------------------------------------------------
+
   final EventApi eventApi = EventApi();
 
-  //* C(reate)-U-D-E tests ------------------------------------------------------------------------------------------
+  //* C(reate)-U-D-E tests ---------------------------------------------------------------------------------------------
   group('postEvent()', () {
     test('should return a map with a success message', () async {
       //^ Setup
@@ -34,7 +53,33 @@ void main() {
     });
   });
 
-//* C-R(ead)-U-D tests ------------------------------------------------------------------------------------------
+//* C-R(ead)-U-D tests -------------------------------------------------------------------------------------------------
+
+  group('getAllEvents', () {
+    test('should return a list of all events in the database', () async {
+      //^ Setup
+      final event = Event(date: DateTime.now(), title: 'Test Title', description: 'Test Description');
+      final postResponse = await eventApi.postEvent(event);
+      if (postResponse['success'] == false) {
+        log('Event could not be added: $postResponse');
+        return;
+      }
+      final postedEventId = postResponse['data']['id'];
+
+      //! Action
+      final events = await eventApi.getAllEvents();
+      log('Events: $events');
+
+      //? Testing
+      expect(events, isNotEmpty);
+      expect(events.any((e) => e.id == postedEventId), true);
+
+      // Cleanup
+      final deleteResponse = await eventApi.deleteEventById(postedEventId);
+      log('Event deleted: $deleteResponse');
+    });
+  });
+
   group('getEventsForDate()', () {
     test('should return a list of events', () async {
       //^ Setup
@@ -59,34 +104,9 @@ void main() {
       final deleteResponse = await eventApi.deleteEventById(postedEventId);
       log('Event deleted: $deleteResponse');
     });
-
-    group('getAllEvents', () {
-      test('should return a list of all events in the database', () async {
-        //^ Setup
-        final event = Event(date: DateTime.now(), title: 'Test Title', description: 'Test Description');
-        final postResponse = await eventApi.postEvent(event);
-        if (postResponse['success'] == false) {
-          log('Event could not be added: $postResponse');
-          return;
-        }
-        final postedEventId = postResponse['data']['id'];
-
-        //! Action
-        final events = await eventApi.getAllEvents();
-        log('Events: $events');
-
-        //? Testing
-        expect(events, isNotEmpty);
-        expect(events.any((e) => e.id == postedEventId), true);
-
-        // Cleanup
-        final deleteResponse = await eventApi.deleteEventById(postedEventId);
-        log('Event deleted: $deleteResponse');
-      });
-    });
   });
 
-  //* C-R-U(pdate)-D tests ------------------------------------------------------------------------------------------
+  //* C-R-U(pdate)-D tests ---------------------------------------------------------------------------------------------
 
   group('updateEventById()', () {
     test('should return the updated event', () async {
@@ -119,7 +139,7 @@ void main() {
     });
   });
 
-  //* C-R-U-D(elete) tests ------------------------------------------------------------------------------------------
+  //* C-R-U-D(elete) tests ---------------------------------------------------------------------------------------------
   group('deleteEventById()', () {
     test('with existing ID should return a success message', () async {
       //^ Setup
@@ -141,19 +161,5 @@ void main() {
 
       // Cleanup (not necessary)
     });
-  });
-
-  test('db connection successfully with statuscode 200', () async {
-    //^ Setup
-    var dio = Dio();
-    var url = dbAddress;
-
-    //! Action
-    final response = await dio.get(url);
-
-    //? Testing
-    expect(response.statusCode, 200);
-
-    // Cleanup (not necessary)
   });
 }

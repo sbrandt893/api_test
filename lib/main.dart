@@ -1,5 +1,4 @@
-import 'package:api_test/backend/apis/event_api.dart';
-import 'backend/models/event.dart';
+//TODO: Import the missing dependencies and make the main function runnable
 
 void main() async {
   // run crud operations on the event api

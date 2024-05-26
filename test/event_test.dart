@@ -1,4 +1,5 @@
-import 'package:api_test/backend/models/event.dart';
+//TODO: Make the tests pass
+
 import 'package:test/test.dart';
 
 void main() {
@@ -8,6 +9,15 @@ void main() {
     expect(event.date, isNotNull);
     expect(event.title, 'Test Title');
     expect(event.description, 'Test Description');
+  });
+
+  test('Event.copyWith() should return a new Event object with updated values', () {
+    final event = Event(date: DateTime(2024, 4, 21), title: 'Test Title', description: 'Test Description');
+    final updatedEvent = event.copyWith(title: 'Updated Title', description: 'Updated Description');
+    expect(updatedEvent.id, null);
+    expect(updatedEvent.date, DateTime(2024, 4, 21));
+    expect(updatedEvent.title, 'Updated Title');
+    expect(updatedEvent.description, 'Updated Description');
   });
 
   test('Event.fromJson() should create an Event from a JSON object', () {
@@ -36,14 +46,5 @@ void main() {
   test('Event.toString() should return a string representation of the Event', () {
     final event = Event(date: DateTime(2024, 4, 21), title: 'Test Title', description: 'Test Description');
     expect(event.toString(), 'Event{id: null, date: 2024-04-21 00:00:00.000, title: Test Title, description: Test Description}');
-  });
-
-  test('Event.copyWith() should return a new Event object with updated values', () {
-    final event = Event(date: DateTime(2024, 4, 21), title: 'Test Title', description: 'Test Description');
-    final updatedEvent = event.copyWith(title: 'Updated Title', description: 'Updated Description');
-    expect(updatedEvent.id, null);
-    expect(updatedEvent.date, DateTime(2024, 4, 21));
-    expect(updatedEvent.title, 'Updated Title');
-    expect(updatedEvent.description, 'Updated Description');
   });
 }

@@ -1,3 +1,5 @@
+//TODO: Add all php files to C:\...\xampp\htdocs\calendar_project\
+
 <?php
 // Database configuration
 $servername = "127.0.0.1";
