@@ -3,4 +3,4 @@
 .dart_tool/
 
 # Ignoriere die spezifische Dart-Konfigurationsdatei
-lib/config.dart
+# lib/config.dart
